@@ -26,4 +26,4 @@ python main.py
 
 ## Referensi
 
-[Instaloader Github](<[https://](https://github.com/instaloader/instaloader)>)
+[Instaloader Github](https://github.com/instaloader/instaloader)

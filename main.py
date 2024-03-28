@@ -128,6 +128,13 @@ def download_saved_post_self():
     print('Download Berhasil!')
 
 
+def show_display_menu(menu: str):
+    """Hanya metode untuk menampilkan menu"""
+    print("-"*25)
+    print("DOWNLOAD", menu)
+    print("-"*25)
+
+
 while True:
     print("="*20, "MENU DOWNLOAD", "="*20)
     print("0. Keluar Program")
@@ -144,34 +151,22 @@ while True:
             print("PROGRAM BERAKHIR!")
             quit()
         case "1":
-            print("-"*25)
-            print("DOWNLOAD PROFILE PICTURE")
-            print("-"*25)
+            show_display_menu('PROFILE PICTURE')
             download_profile_picture()
         case "2":
-            print("-"*25)
-            print("DOWNLOAD POST")
-            print("-"*25)
+            show_display_menu('POST')
             download_post()
         case "3":
-            print("-"*25)
-            print("DOWNLOAD STORIES")
-            print("-"*25)
+            show_display_menu('STORIES')
             download_stories_by_profile()
         case "4":
-            print("-"*25)
-            print("DOWNLOAD HIGHLIGHTS")
-            print("-"*25)
+            show_display_menu('HIGHLIGHTS')
             download_highlights_from_username()
         case "5":
-            print("-"*25)
-            print("DOWNLOAD PROFILE POSTS")
-            print("-"*25)
+            show_display_menu('PROFILE POSTS')
             download_profile_posts()
         case "6":
-            print("-"*25)
-            print("DOWNLOAD SAVED POST")
-            print("-"*25)
+            show_display_menu('SAVED POST')
             download_saved_post_self()
         case _:
             print("Masukkan Dengan Benar!")

@@ -1,7 +1,9 @@
 import instaloader
 from instaloader import Post, Profile
+import instaloader.exceptions as Except
+
 # Get instance
-USER = 'USERNAME-IG'
+USER = 'INSTAGRAM-USERNAME'
 L = instaloader.Instaloader(
     filename_pattern='{filename}', dirname_pattern='./download/{target}', save_metadata=False, compress_json=False, post_metadata_txt_pattern='')
 L.load_session_from_file(USER)
@@ -14,9 +16,12 @@ def clean_url_post(url: str):
     url = url.removeprefix("https://www.instagram.com/reel/")
     url = url.removeprefix("https://www.instagram.com/p/")
 
-    substring_border = "/"
-    url = url[:url.index(substring_border) + len(substring_border)]
-    url = url.removesuffix("/")
+    slash_symbol = "/"
+    has_slash = slash_symbol in url
+
+    if (has_slash is True):
+        url = url[:url.index(slash_symbol) + len(slash_symbol)]
+        url = url.removesuffix("/")
 
     return url
 
@@ -24,9 +29,18 @@ def clean_url_post(url: str):
 def download_profile_picture():
     """Metode untuk mengunduh Profile Picture dari suatu akun"""
     username_profile = input("Masukkan Username: ")
-    profile = Profile.from_username(L.context, username_profile)
-    print(f'Mengunduh Avatar {profile.username} ({profile.full_name}) ...')
-    L.download_profilepic(profile)
+    try:
+        profile = Profile.from_username(L.context, username_profile)
+    except Except.ProfileNotExistsException:
+        print("USERNAME TIDAK DITEMUKAN!")
+        print("Download Gagal!")
+    except Except.PrivateProfileNotFollowedException:
+        print("Akun Ini Bersifat PRIVATE!, Anda tidak dapat mendownloadnya karena anda TIDAK Mengikuti Akun Ini!")
+        print("Download Gagal!")
+    else:
+        print(f'Mengunduh Avatar {profile.username} ({profile.full_name}) ...')
+        L.download_profilepic(profile)
+        print('Download Berhasil!')
 
 
 def download_post():
@@ -34,44 +48,84 @@ def download_post():
     input_url = input("Masukkan URL Post: ")
     clean_url = clean_url_post(input_url)
 
-    post = Post.from_shortcode(L.context, clean_url)
+    try:
+        post = Post.from_shortcode(L.context, clean_url)
+    except Except.BadResponseException:
+        print("Gagal Mengambil Data, URL Mungkin Tidak Ada atau Dihapus!, Periksa Kembali dan Coba Lagi!")
+        print("Download Gagal!")
+    else:
+        print(
+            f'Mengunduh Post: {clean_url} dari {post.owner_username} ...')
 
-    print(
-        f'Mengunduh Post: {clean_url} dari {post.owner_username} ...')
+        L.download_post(post, target=post.owner_username)
 
-    L.download_post(post, target=post.owner_username)
+        print('Download Berhasil!')
 
 
 def download_stories_by_profile():
     """Method untuk mengunduh stories dari suatu akun"""
     username = input("Masukkan username: ")
-    profile = Profile.from_username(L.context, username)
-    print(
-        f'Mengunduh Stories dari Profile {profile.username} ({profile.full_name})')
-    L.download_profile(profile, download_stories_only=True, profile_pic=False)
+
+    try:
+        profile = Profile.from_username(L.context, username)
+    except Except.ProfileNotExistsException:
+        print("USERNAME TIDAK DITEMUKAN!")
+        print("Download Gagal!")
+    else:
+        try:
+            print(
+                f'Mengunduh Stories dari Profile {profile.username} ({profile.full_name})')
+            L.download_profile(
+                profile, download_stories_only=True, profile_pic=False)
+        except Except.PrivateProfileNotFollowedException:
+            print("Akun Ini Bersifat PRIVATE!, Anda tidak dapat mendownloadnya karena anda TIDAK Mengikuti Akun Ini!")
+            print("Download Gagal!")
+        else:
+            print('Download Berhasil!')
 
 
 def download_highlights_from_username():
     'Method untuk mengunduh highlights dari suatu akun'
     username = input("Masukkan username: ")
-    profile = Profile.from_username(L.context, username)
-    print(
-        f'Mengunduh Highlights dari Profile {profile.username} ({profile.full_name})')
-    L.download_highlights(profile.userid)
+
+    try:
+        profile = Profile.from_username(L.context, username)
+    except Except.ProfileNotExistsException:
+        print("USERNAME TIDAK DITEMUKAN!")
+        print("Download Gagal!")
+    else:
+        print(
+            f'Mengunduh Highlights dari Profile {profile.username} ({profile.full_name})')
+        L.download_highlights(profile.userid)
+        print('Download Berhasil!')
 
 
 def download_profile_posts():
     """Method untuk mengunduh"""
     username_profile = input("Masukkan Username: ")
-    profile = Profile.from_username(L.context, username_profile)
-    print(f'Mengunduh dari Profile {profile.username} ({profile.full_name})')
-    L.download_profile(profile, profile_pic=False)
+
+    try:
+        profile = Profile.from_username(L.context, username_profile)
+    except Except.ProfileNotExistsException:
+        print("USERNAME TIDAK DITEMUKAN!")
+        print("Download Gagal!")
+    else:
+        try:
+            print(
+                f'Mengunduh dari Profile {profile.username} ({profile.full_name})')
+            L.download_profile(profile, profile_pic=False)
+        except Except.PrivateProfileNotFollowedException:
+            print("Akun Ini Bersifat PRIVATE!, Anda tidak dapat mendownloadnya karena anda TIDAK Mengikuti Akun Ini!")
+            print("Download Gagal!")
+        else:
+            print('Download Berhasil!')
 
 
 def download_saved_post_self():
     """Metode untuk mengunduh semua saved dari profile (login)"""
     print(f'Mengunduh semua Saved dari {L.context.username}')
     L.download_saved_posts()
+    print('Download Berhasil!')
 
 
 while True:
@@ -94,37 +148,31 @@ while True:
             print("DOWNLOAD PROFILE PICTURE")
             print("-"*25)
             download_profile_picture()
-            print('Download Berhasil!')
         case "2":
             print("-"*25)
             print("DOWNLOAD POST")
             print("-"*25)
             download_post()
-            print('Download Berhasil!')
         case "3":
             print("-"*25)
             print("DOWNLOAD STORIES")
             print("-"*25)
             download_stories_by_profile()
-            print('Download Berhasil!')
         case "4":
             print("-"*25)
             print("DOWNLOAD HIGHLIGHTS")
             print("-"*25)
             download_highlights_from_username()
-            print('Download Berhasil!')
         case "5":
             print("-"*25)
             print("DOWNLOAD PROFILE POSTS")
             print("-"*25)
             download_profile_posts()
-            print('Download Berhasil!')
         case "6":
             print("-"*25)
             print("DOWNLOAD SAVED POST")
             print("-"*25)
             download_saved_post_self()
-            print('Download Berhasil!')
         case _:
             print("Masukkan Dengan Benar!")
 

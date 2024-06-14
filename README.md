@@ -21,6 +21,10 @@ Teknologi Yang digunakan dalam pembangunan:
 | instaloader        | 4+      |
 | python-dotenv      | 1.0     |
 
+### Setup File Env
+
+Buka file `.env.example`, rename menjadi `.env` lalu ganti `INSTAGRAM_USERNAME` di file `.env` dengan username instagram anda.
+
 ### Install Library
 
 Install semua Library yang dibutuhkan:

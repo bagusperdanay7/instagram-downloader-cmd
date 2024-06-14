@@ -3,7 +3,7 @@ from instaloader import Post, Profile
 import instaloader.exceptions as Except
 
 # Get instance
-USER = 'INSTAGRAM-USERNAME'
+USER = 'milkitakid'
 L = instaloader.Instaloader(
     filename_pattern='{filename}', dirname_pattern='./download/{target}', save_metadata=False, compress_json=False, post_metadata_txt_pattern='')
 L.load_session_from_file(USER)

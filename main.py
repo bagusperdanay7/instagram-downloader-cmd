@@ -172,8 +172,8 @@ def show_display_menu(menu: str):
 while True:
     print("="*20, "MENU DOWNLOAD", "="*20)
     print("0. Keluar Program")
-    print("1. Download Avatar")
-    print("2. Download Post")
+    print("1. Download Post")
+    print("2. Download Avatar")
     print("3. Download Stories")
     print("4. Download Highlights")
     print("5. Download All Post from Profile")
@@ -185,11 +185,11 @@ while True:
             print("PROGRAM BERAKHIR!")
             quit()
         case "1":
-            show_display_menu('PROFILE PICTURE')
-            download_profile_picture()
-        case "2":
             show_display_menu('POST')
             download_post()
+        case "2":
+            show_display_menu('PROFILE PICTURE')
+            download_profile_picture()
         case "3":
             show_display_menu('STORIES')
             download_stories_by_profile()
